@@ -13,7 +13,7 @@
             </el-form-item>
 
             <el-form-item label="">
-                <el-checkbox label="记住密码"></el-checkbox>
+                <el-checkbox v-model="user.checked" label="记住密码"></el-checkbox>
             </el-form-item>
             <el-form-item label="">
                 <el-button type="primary" @click="handleLogin">登录</el-button>
@@ -28,7 +28,8 @@ export default {
         return {
             user:{
                 username:"",
-                password:""
+                password:"",
+                checked:false
             },
             rules:{
                 username: [
@@ -51,15 +52,39 @@ export default {
                         username:this.user.username,
                         password:this.user.password
                     })
-                    if(rs.data.code === 0){
-                        // 失败
+                    console.log(rs);
+                    if(rs.data.code === -1){
+                        //登录失败
+                        this.$message({
+                            message:rs.data.message,
+                            type:"warning"
+                        })
                     }else{
-                        //成功
+                        //登录成功
+                        //若勾选了记住密码则存入localStorage
+                        if(this.user.checked){
+                            localStorage.setItem('checked',this.user.checked)
+                            localStorage.setItem('username',this.user.username)
+                            localStorage.setItem('password',this.user.password)
+                        }else{
+                            localStorage.removeItem('checked')
+                            localStorage.removeItem('username')
+                            localStorage.removeItem('password')
+                        }
+                        this.$router.push('/home')
                     }
                 }else{
                     console.log('unpass');
                 }
             })
+        }
+    },
+    mounted(){
+        let checked =JSON.parse(localStorage.getItem('checked'));
+        if(checked){
+            this.user.checked = checked;
+            this.user.username = localStorage.getItem('username');
+            this.user.password = localStorage.getItem('password');
         }
     }
 }

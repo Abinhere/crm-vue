@@ -7,6 +7,8 @@ import 'element-ui/lib/theme-chalk/index.css';
 import '../src/assets/css/common.css';
 import '../src/assets/css/reset.css';
 import axios from 'axios'
+//mock用来拦截ajax请求
+import "../mock/index"
 
 Vue.prototype.$http = axios;
 
