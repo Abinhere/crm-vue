@@ -10,6 +10,13 @@ import axios from 'axios'
 //mock用来拦截ajax请求
 import "../mock/index"
 
+//这一段用来解决报错 Uncaught (in promise) NavigationDuplicated {_name: “NavigationDuplicated”, name: “NavigationDuplicated”}；
+import Router from 'vue-router'
+const routerPush = Router.prototype.push
+Router.prototype.push = function push(location) {
+return routerPush.call(this, location).catch(error=> error)
+}
+
 Vue.prototype.$http = axios;
 
 Vue.use(ElementUI);
