@@ -11,7 +11,7 @@
         </el-row>
 
          <el-table
-            :data="datalist"
+            :data="datalist" v-loading="isloading"
             style="width: 100%" :height="getHeight()"
             :default-sort = "{prop: 'date', order: 'descending'}"
             @selection-change="handleSelect" 
@@ -62,7 +62,8 @@ export default {
             pagesize:10,
             total:0,
             datalist:[],
-            selectedList:[]
+            selectedList:[],
+            isloading:false
         }
     },
     computed:{
@@ -89,13 +90,33 @@ export default {
         handleEdit(){
 
         },
-        handleDelete(){
-
+        handleDelete(index,row){
+            this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(async () => {
+                let id = row.id;
+                let rs = await this.$http.get("/api/user/del",{ params: {id}})
+                this.$message({
+                    type: 'success',
+                    message: rs.data.message
+                });
+                if(rs.data.code === 1){
+                    this.getuserlist();
+                }
+            }).catch(() => {
+            this.$message({
+                type: 'info',
+                message: '已取消删除'
+                });          
+            });
         },
         handleQuery(){
             this.getuserlist()
         },
         async getuserlist(){
+            this.isloading = true;
             let rs = await this.$http.post('/api/user/list',
             {
                 name:this.name,
@@ -104,6 +125,7 @@ export default {
             })
             this.datalist = rs.data.list
             this.total = rs.data.total
+            this.isloading = false
         }
     },
     created(){

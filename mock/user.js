@@ -63,3 +63,16 @@ Mock.mock('/api/user/list','post',(options)=>{
         list:result
     }
 })
+
+Mock.mock(/\/api\/user\/del/,'get',(options)=>{
+    let id = options.url.split('=')[1];
+    Users.forEach((user,index)=>{
+        if(user.id == id){
+            Users.splice(index,1);
+        }
+    })
+    return{
+        code:1,
+        message:"删除数据成功"
+    }
+})
