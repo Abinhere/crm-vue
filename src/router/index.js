@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import User from '../views/user/User'
 import Roles from '../views/user/Roles'
+import Store from '../store'
 
 Vue.use(VueRouter)
 
@@ -64,6 +65,7 @@ const router = new VueRouter({
 
 // 权限验证
 //beforeEach跳转到对应的页面前执行
+//路由守卫 前置守卫
 router.beforeEach((to,from,next)=>{
 
   if(to.path === '/login'){
@@ -80,6 +82,11 @@ router.beforeEach((to,from,next)=>{
   }else{
     router.push('/login')
   }
+})
+
+//路由守卫 后置守卫
+router.afterEach((to,from)=>{
+  Store.commit('SET_MENU_ACTIVE',to.meta.id)
 })
 
 export default router

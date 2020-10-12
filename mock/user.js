@@ -27,3 +27,39 @@ Mock.mock('/api/user/logout','get',()=>{
         message:"退出登陆成功"
     })
 })
+
+//mock.js 这里的@相当于Random 例如: @cname 相当于 Random.cname
+var Users = [];
+function InitUserData(){
+    for(let i = 0; i < 56; i++){
+        Users.push(Mock.mock({
+            id:"@increment()",
+            name:"@cname",
+            sex:"@natural(0,1)",
+            age:"@natural(18,100)",
+            date:"@date()",
+            address:"@county(true)"
+        }))
+    }
+}
+
+InitUserData()
+
+Mock.mock('/api/user/list','post',(options)=>{
+    let {name,pageno,pagesize} =JSON.parse(options.body);
+    //查询
+    let temUsers = Users.filter((user) => {
+        return user.name.indexOf(name) > -1;
+    })
+
+    //分页处理
+    let startIndex = (pageno - 1) *pagesize;
+    let endIndex = startIndex + pagesize;
+    let result = temUsers.slice(startIndex,endIndex)
+
+    return {
+        total:temUsers.length,
+        code:1,
+        list:result
+    }
+})

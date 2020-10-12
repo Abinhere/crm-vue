@@ -1,18 +1,16 @@
 <template>
     <el-menu
-      default-active="2"
+      :default-active="$store.state.menuActive"
       class="el-menu-vertical-demo"
       :default-openeds="openeds"
       >
         <el-submenu :index="item.meta.id" v-for="(item) in $router.options.routes" :key="item.meta.id" v-if="item.meta">
             <template slot="title">
                 <i :class="item.meta.iconclass"></i>
-                <span>{{item.meta.name}}</span>
+                {{item.meta.name}}
             </template>
-        <el-menu-item :index="sub.meta.id" v-for="(sub) in item.children" :key="sub.meta.id">
-            <span @click="handleClick(sub)">
+        <el-menu-item :index="sub.meta.id" v-for="(sub) in item.children" :key="sub.meta.id" @click="handleClick(sub)">
                 {{sub.meta.name}}
-            </span>
         </el-menu-item>
         </el-submenu>
     </el-menu>

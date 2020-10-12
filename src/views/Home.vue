@@ -52,9 +52,9 @@ export default {
         if(rs.data.code === 1){
           sessionStorage.removeItem("username");
           this.$message({
-          message: rs.data.message,
-          type: 'success'
-        });
+            message: rs.data.message,
+            type: 'success'
+          });
           this.$router.push('/login')
         }
       }

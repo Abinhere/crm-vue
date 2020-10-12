@@ -65,6 +65,7 @@ export default {
                             type:"warning"
                         })
                     }else{
+                        //用户的会话信息
                         sessionStorage.setItem('username',this.user.username)
 
                         //登录成功
