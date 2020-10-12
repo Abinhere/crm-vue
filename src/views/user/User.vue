@@ -6,7 +6,7 @@
             </el-col>
             <el-col :span="4">
                 <el-button type="primary" @click="handleQuery">搜索</el-button>
-                <el-button type="primary">新增</el-button>
+                <el-button type="success" @click="handleAdd">新增</el-button>
             </el-col>
         </el-row>
 
@@ -23,6 +23,9 @@
             <el-table-column prop="name" label="姓名" sortable width="180">
             </el-table-column>
             <el-table-column prop="sex" label="性别" sortable width="100">
+                <template slot-scope="scope">
+                    {{scope.row.sex ? '女':'男'}}
+                </template>
             </el-table-column>
             <el-table-column prop="age" label="年龄" sortable width="100">
             </el-table-column>
@@ -41,7 +44,7 @@
         <!-- 分页 -->
         <el-row class="footer">
             <el-col :span="4" align="left">
-                <el-button :type="istype" :disabled="isbatchDel">批量删除</el-button>
+                <el-button :type="istype" @click="handleBatchDel" :disabled="isbatchDel">批量删除</el-button>
             </el-col>
             <el-col :span="20" align="right">
             <el-pagination
@@ -51,9 +54,12 @@
             </el-pagination>
             </el-col>
         </el-row>
+        <!--  @close 监听子组件中的close事件-->
+        <UserAdd v-if="showAdd" @close="handleAddClose"></UserAdd>
     </div>
 </template>
 <script>
+import UserAdd from './UserAdd'
 export default {
     data(){
         return{
@@ -63,8 +69,15 @@ export default {
             total:0,
             datalist:[],
             selectedList:[],
-            isloading:false
+            isloading:false,
+            //是否显示新增窗口
+            showAdd:false,
+            //是否展示编辑窗口
+            showEdit:false
         }
+    },
+    components:{
+        UserAdd
     },
     computed:{
         isbatchDel(){
@@ -76,20 +89,44 @@ export default {
         }
     },
     methods:{
+        //适应页面高度
         getHeight(){
             return window.innerHeight - 215;
         },
+        //勾选
         handleSelect(select,rows){
-            this.selectedList = select;
+            this.selectedList = [];
+            select.forEach((item)=>{
+                this.selectedList.push(item.id)
+            })
         },
         //curPage页码
         handlePageChange(curPage){
             this.pageno = curPage;
             this.getuserlist();
         },
+        //新增
+        handleAdd(){
+            this.showAdd = true;
+        },
+        //编辑
         handleEdit(){
 
         },
+        //关闭新增窗口时
+        handleAddClose(status){
+            this.showAdd = false
+            //添加数据成功时
+            if(status === 'success'){
+                this.$message({
+                    type:"success",
+                    message:"添加用户成功"
+                })
+                //添加成功时重新获取用户列表
+                this.getuserlist()
+            }
+        },
+        //单个删除
         handleDelete(index,row){
             this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
                 confirmButtonText: '确定',
@@ -106,6 +143,34 @@ export default {
                     this.getuserlist();
                 }
             }).catch(() => {
+            this.$message({
+                type: 'info',
+                message: '已取消删除'
+                });          
+            });
+        },
+        //批量删除
+        handleBatchDel(){
+            this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            })
+            .then(async () => {
+                let rs = await this.$http.post("/api/user/batchdel",
+                {ids:this.selectedList}
+                )
+                this.$message({
+                    type: 'success',
+                    message: rs.data.message
+                });
+                if(rs.data.code === 1){
+                    //删除成功后把selectedList置空 这一步的作用是为了计算属性中再次获取 以此来控制批量删除按钮状态再次变为不可选
+                    this.selectedList = []
+                    this.getuserlist();
+                }
+            })
+            .catch(() => {
             this.$message({
                 type: 'info',
                 message: '已取消删除'

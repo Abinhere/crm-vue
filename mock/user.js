@@ -1,3 +1,4 @@
+import { options } from 'less'
 import Mock from 'mockjs'
 const User = {
     username:"admin",
@@ -63,7 +64,7 @@ Mock.mock('/api/user/list','post',(options)=>{
         list:result
     }
 })
-
+//单个删除
 Mock.mock(/\/api\/user\/del/,'get',(options)=>{
     let id = options.url.split('=')[1];
     Users.forEach((user,index)=>{
@@ -74,5 +75,49 @@ Mock.mock(/\/api\/user\/del/,'get',(options)=>{
     return{
         code:1,
         message:"删除数据成功"
+    }
+})
+//批量删除
+Mock.mock('/api/user/batchdel','post',(options)=>{
+    let ids = JSON.parse(options.body).ids;
+    // 第一层循环找到所有选中元素
+    for(let i = 0;i < ids.length; i++){
+        //第二层循环逆向删除选中元素 因为正向删除时每次删除元素下标变动时会有影响 所有采用逆向删除
+        for(let j = Users.length-1; j>=0 ; j--){
+            if(ids[i] == Users[j].id){
+                Users.splice(j,1)
+                break;
+            }
+        }
+    }
+    return {
+        code:1,
+        message:'批量删除成功'
+    }
+})
+
+//添加
+Mock.mock('/api/user/add','post',(options)=>{
+    let user = JSON.parse(options.body);
+    user.id = Users.length +1;
+    Users.push(user);
+
+    return {
+        code:1,
+        message:"添加用户成功"
+    }
+})
+
+// 更新
+Mock.mock('/api/user/update','post',(options)=>{
+    let user = JSON.parse(options.body)
+    Users.forEach((item,index)=>{
+        if(item.id === user.id){
+            Users[index] = user;
+        }
+    })
+    return {
+        code:1,
+        message:"用户修改成功"
     }
 })
