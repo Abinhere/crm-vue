@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="新增" :visible.sync="dialogFormVisible" @close="$emit('close')"
+    <el-dialog title="编辑" :visible.sync="dialogFormVisible" @close="$emit('close')"
     :rules="rules"
     >
         <el-form :model="user" ref="userForm">
@@ -21,10 +21,9 @@
                 <el-date-picker
                     v-model="user.date"
                     type="date"
-                    placeholder="选择日期"
                     format="yyyy 年 MM 月 dd 日"
                     value-format="yyyy-MM-dd"
-                >
+                    placeholder="选择日期">
                 </el-date-picker>
             </el-form-item>
 
@@ -41,6 +40,8 @@
 
 <script>
 export default {
+    //接收父组件传来的数据 也就是编辑行的用户信息数据
+    props:['edituser'],
     data(){
         return{
             formLabelWidth:"80px",
@@ -71,7 +72,7 @@ export default {
         handleSubmit(){
             this.$refs.userForm.validate(async valid => {
                 if(valid){
-                    let rs = await this.$http.post('/api/user/add',{...this.user});
+                    let rs = await this.$http.post('/api/user/update',{...this.user});
                     if(rs.data.code === 1){
                         this.$emit('close','success')
                     }
@@ -79,6 +80,12 @@ export default {
                 }
             })
         }
+    },
+    mounted(){
+        //把父组件传来的数据赋给user
+        //Object.assign() 方法用于将所有可枚举属性的值从一个或多个源对象复制到目标对象。它将返回目标对象。
+        //即将this.edituser中属性的值 一一复制给空对象{}，然后返回这个对象 然后把这个对象赋值给this.user
+        this.user = Object.assign({},this.edituser)
     }
 }
 </script>

@@ -56,10 +56,14 @@
         </el-row>
         <!--  @close 监听子组件中的close事件-->
         <UserAdd v-if="showAdd" @close="handleAddClose"></UserAdd>
+        <!-- 两种写法都可以 -->
+        <!-- <UserEdit v-if="showEdit"></UserEdit> -->
+        <user-edit v-if="showEdit" :edituser="currentUser" @close="handleEditClose"></user-edit>
     </div>
 </template>
 <script>
 import UserAdd from './UserAdd'
+import UserEdit from './UserEdit'
 export default {
     data(){
         return{
@@ -73,11 +77,14 @@ export default {
             //是否显示新增窗口
             showAdd:false,
             //是否展示编辑窗口
-            showEdit:false
+            showEdit:false,
+            //编辑时当前选择的用户数据
+            currentUser:{}
         }
     },
     components:{
-        UserAdd
+        UserAdd,
+        UserEdit
     },
     computed:{
         isbatchDel(){
@@ -92,6 +99,11 @@ export default {
         //适应页面高度
         getHeight(){
             return window.innerHeight - 215;
+        },
+        //编辑
+        handleEdit(index,row){
+            this.showEdit = true;
+            this.currentUser = row;
         },
         //勾选
         handleSelect(select,rows){
@@ -109,11 +121,7 @@ export default {
         handleAdd(){
             this.showAdd = true;
         },
-        //编辑
-        handleEdit(){
-
-        },
-        //关闭新增窗口时
+        //关闭新增窗口
         handleAddClose(status){
             this.showAdd = false
             //添加数据成功时
@@ -123,6 +131,19 @@ export default {
                     message:"添加用户成功"
                 })
                 //添加成功时重新获取用户列表
+                this.getuserlist()
+            }
+        },
+        //关闭编辑窗口
+        handleEditClose(status){
+            this.showEdit = false
+            //编辑成功时
+            if(status === 'success'){
+                this.$message({
+                    type:"success",
+                    message:"更新用户成功"
+                })
+                //更新成功时重新获取用户列表
                 this.getuserlist()
             }
         },
