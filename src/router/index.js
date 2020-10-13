@@ -5,7 +5,7 @@ import Login from '../views/Login.vue'
 import User from '../views/user/User'
 import Roles from '../views/user/Roles'
 import Store from '../store'
-
+import Statics from '../views/statics/Statics.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -23,10 +23,15 @@ const routes = [
     component: Home,
     meta:{
       name:'应用管理',
-      id:"1",iconclass:"el-icon-user-solid"
+      id:"1",
+      iconclass:"el-icon-user-solid"
     },
     redirect:"/home/user",
     children:[
+      {
+        path:'/home/statics',
+        component:Statics,
+      },
       {
         path:'/home/user',
         component:User,
@@ -63,6 +68,12 @@ const router = new VueRouter({
   routes
 })
 
+//难点 重写原型中的Push 解决报错
+// const originVueRoutrt = VueRouter.prototype.push;
+// VueRouter.prototype.push = function (location,onComplete,onAbort){
+//   return originVueRouter.call(this,location,()=>{})
+// }
+
 // 权限验证
 //beforeEach跳转到对应的页面前执行
 //路由守卫 前置守卫
@@ -70,10 +81,11 @@ router.beforeEach((to,from,next)=>{
 
   if(to.path === '/login'){
     if(sessionStorage.getItem('username')){
-      router.push('/home')
+      router.push('/home/statics')
     }else{
       next()
     }
+    return;
   }
 
   //加强版本：调用后端接口 + token 真实项目中时

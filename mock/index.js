@@ -6,3 +6,4 @@ Mock.setup({
     timeout:"50-300"
 })
 import "./user"
+import "./static"

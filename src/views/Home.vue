@@ -24,8 +24,10 @@
       <el-main>
         <el-breadcrumb separator="/">
           <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-          <el-breadcrumb-item v-for="item in $route.matched" :key="item.meta.id"><a :href="'#'+item.path">{{item.meta.name}}</a></el-breadcrumb-item>
-        </el-breadcrumb>
+          <div v-if="$route.path !== '/home/statics'">
+            <el-breadcrumb-item v-for="item in $route.matched" :key="item.meta.id"><a :href="'#'+item.path">{{item.meta.name}}</a></el-breadcrumb-item>
+          </div>
+          </el-breadcrumb>
         <router-view></router-view>
       </el-main>
       <el-footer>Footer</el-footer>
@@ -59,6 +61,9 @@ export default {
         }
       }
     }
+  },
+  mounted(){
+
   },
   components: {
     MenuBar

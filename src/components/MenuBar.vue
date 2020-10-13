@@ -4,12 +4,12 @@
       class="el-menu-vertical-demo"
       :default-openeds="openeds"
       >
-        <el-submenu :index="item.meta.id" v-for="(item) in $router.options.routes" :key="item.meta.id" v-if="item.meta">
+        <el-submenu :index="item.meta.id" v-for="(item) in getNav($router.options.routes)" :key="item.meta.id">
             <template slot="title">
                 <i :class="item.meta.iconclass"></i>
                 {{item.meta.name}}
             </template>
-        <el-menu-item :index="sub.meta.id" v-for="(sub) in item.children" :key="sub.meta.id" @click="handleClick(sub)">
+        <el-menu-item :index="sub.meta.id" v-for="(sub) in getNav(item.children)" :key="sub.meta.id" @click="handleClick(sub)">
                 {{sub.meta.name}}
         </el-menu-item>
         </el-submenu>
@@ -26,6 +26,9 @@ export default {
     methods:{
         handleClick(menu){
             this.$router.push(menu.path)
+        },
+        getNav(list){
+            return list.filter(item => item.meta)
         }
     },
     mounted(){

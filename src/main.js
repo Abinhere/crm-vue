@@ -13,6 +13,7 @@ import "../mock/index"
 //这一段用来解决报错 Uncaught (in promise) NavigationDuplicated {_name: “NavigationDuplicated”, name: “NavigationDuplicated”}；
 import Router from 'vue-router'
 const routerPush = Router.prototype.push
+//重写一下原型上的push方法
 Router.prototype.push = function push(location) {
 return routerPush.call(this, location).catch(error=> error)
 }
